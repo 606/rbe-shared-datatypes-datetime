@@ -1,0 +1,52 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <LangVersion>latest</LangVersion>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <WarningsNotAsErrors>NU1701</WarningsNotAsErrors>
+    
+    <!-- Versioning (overridden by CI/CD pipeline) -->
+    <Version>0.1.0</Version>
+    <AssemblyVersion>0.1.0.0</AssemblyVersion>
+    <FileVersion>0.1.0.0</FileVersion>
+    <Deterministic>true</Deterministic>
+    
+    <!-- Package metadata -->
+    <PackageId>Temabit.Rbe.DataTypes.DateTime</PackageId>
+    <Authors>Temabit RBE Team</Authors>
+    <Company>Temabit</Company>
+    <Product>RBE Shared Tools</Product>
+    <Description>DateTime data types and utilities for RBE shared components</Description>
+    <Copyright>Copyright © Temabit $([System.DateTime]::Now.Year)</Copyright>
+    <PackageTags>datetime;utilities;rbe;temabit;netstandard;dotnet</PackageTags>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <PackageProjectUrl>https://github.com/temabit/rbe-shared-tools-datetime</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/temabit/rbe-shared-tools-datetime.git</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <PackageReadmeFile>README.md</PackageReadmeFile>
+    <PackageReleaseNotes>See CHANGELOG.md for release notes</PackageReleaseNotes>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <IncludeSymbols>true</IncludeSymbols>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    
+    <!-- Enable Source Link -->
+    <EmbedUntrackedSources>true</EmbedUntrackedSources>
+    <DebugType>portable</DebugType>
+    
+    <!-- Documentation -->
+    <GenerateDocumentationFile>true</GenerateDocumentationFile>
+    <NoWarn>$(NoWarn);1591</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="../../README.md" Pack="true" PackagePath="/"/>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All"/>
+  </ItemGroup>
+
+</Project>
