@@ -1,3 +1,15 @@
+# [2.0.0](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.2...v2.0.0) (2025-09-29)
+
+
+### Bug Fixes
+
+* modernize GitHub Actions and switch to cloud runners ([ce93ece](https://github.com/606/rbe-shared-datatypes-datetime/commit/ce93ecefe604546320b4c515e19316cafcf503ba))
+
+
+### BREAKING CHANGES
+
+* Self-hosted runner is no longer required
+
 ## [1.0.2](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.1...v1.0.2) (2025-09-29)
 
 
