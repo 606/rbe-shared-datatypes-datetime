@@ -1,3 +1,10 @@
+## [2.0.1](https://github.com/606/rbe-shared-datatypes-datetime/compare/v2.0.0...v2.0.1) (2025-09-29)
+
+
+### Bug Fixes
+
+* remove nested repository structure causing Git submodule errors ([23952df](https://github.com/606/rbe-shared-datatypes-datetime/commit/23952df455b8c68f9ecffdbce9260c3e65f5294f))
+
 # [2.0.0](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.2...v2.0.0) (2025-09-29)
 
 
