@@ -52,7 +52,7 @@ jobs:
 
     - name: Upload coverage to Codecov
       if: matrix.runner == 'ubuntu-latest' && matrix.configuration == 'Release'
-      uses: codecov/codecov-action@v3
+      uses: codecov/codecov-action@v5
       with:
         directory: ./coverage
         flags: unittests,${{ matrix.os-label }}
