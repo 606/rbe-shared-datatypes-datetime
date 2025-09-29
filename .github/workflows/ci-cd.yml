@@ -7,6 +7,13 @@ on:
     branches: [ main ]
   release:
     types: [ published ]
+  workflow_dispatch:
+    inputs:
+      force_release:
+        description: 'Force create a release (even if no changes)'
+        required: false
+        default: 'false'
+        type: boolean
 
 permissions:
   contents: write
@@ -64,7 +71,7 @@ jobs:
     name: Semantic Versioning
     runs-on: ubuntu-latest  # Use GitHub runners for semantic release to avoid permission issues
     needs: build-and-test
-    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'workflow_dispatch')
     outputs:
       version: ${{ steps.semantic.outputs.new_version }}
       changelog: ${{ steps.semantic.outputs.changelog }}
@@ -101,7 +108,7 @@ jobs:
     name: Package and Publish NuGet
     runs-on: self-hosted
     needs: [build-and-test, semantic-versioning]
-    if: github.ref == 'refs/heads/main' && needs.semantic-versioning.outputs.released == 'true'
+    if: always() && github.ref == 'refs/heads/main' && needs.build-and-test.result == 'success' && needs.semantic-versioning.result == 'success'
     
     steps:
     - name: Checkout code
