@@ -82,16 +82,14 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+        cache: 'npm'
 
-    - name: Install semantic-release
-      run: |
-        npm install -g semantic-release@21
-        npm install -g @semantic-release/changelog@6.0.3
-        npm install -g @semantic-release/git@10.0.1
+    - name: Install dependencies
+      run: npm ci
 
     - name: Semantic Release
       id: semantic
-      run: npx semantic-release
+      run: npm run semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         GIT_AUTHOR_NAME: semantic-release-bot

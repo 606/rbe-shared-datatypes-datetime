@@ -1,0 +1,19 @@
+{
+  "name": "temabit-rbe-shared-datatypes-datetime",
+  "version": "1.0.0",
+  "description": "DateTime data types and utilities for RBE shared components",
+  "private": true,
+  "devDependencies": {
+    "semantic-release": "^21.1.2",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.1",
+    "conventional-changelog-conventionalcommits": "^7.0.2"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/606/rbe-shared-datatypes-datetime.git"
+  },
+  "scripts": {
+    "semantic-release": "semantic-release"
+  }
+}
