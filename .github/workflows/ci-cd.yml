@@ -15,7 +15,7 @@ env:
 jobs:
   build-and-test:
     name: Build and Test
-    runs-on: ubuntu-latest
+    runs-on: ${{ github.event_name == 'pull_request' && 'self-hosted' || 'ubuntu-latest' }}
     
     steps:
     - name: Checkout code
@@ -54,7 +54,7 @@ jobs:
 
   semantic-versioning:
     name: Semantic Versioning
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-and-test
     if: github.ref == 'refs/heads/main' || github.event_name == 'release'
     outputs:
@@ -81,7 +81,7 @@ jobs:
 
   package-and-publish:
     name: Package and Publish NuGet
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: [build-and-test, semantic-versioning]
     if: github.ref == 'refs/heads/main' || github.event_name == 'release'
     
@@ -135,7 +135,7 @@ jobs:
 
   security-scan:
     name: Security Scan
-    runs-on: ubuntu-latest
+    runs-on: self-hosted
     needs: build-and-test
     
     steps:

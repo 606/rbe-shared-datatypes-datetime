@@ -1,0 +1,134 @@
+name: CI - Pull Request
+
+on:
+  pull_request:
+    branches: [ main, develop ]
+    types: [ opened, synchronize, reopened ]
+
+env:
+  DOTNET_VERSION: '8.0.x'
+
+jobs:
+  fast-build:
+    name: Fast Build & Test
+    runs-on: self-hosted
+    strategy:
+      matrix:
+        os: [self-hosted, ubuntu-latest]
+        include:
+          - os: self-hosted
+            label: "Self-Hosted"
+          - os: ubuntu-latest
+            label: "GitHub-Hosted"
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 1  # Shallow clone for faster checkout
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Cache NuGet packages
+      uses: actions/cache@v3
+      with:
+        path: ~/.nuget/packages
+        key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+        restore-keys: |
+          ${{ runner.os }}-nuget-
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build solution
+      run: dotnet build --no-restore --configuration Debug
+
+    - name: Run unit tests
+      run: dotnet test --no-build --configuration Debug --verbosity minimal
+
+    - name: Check formatting
+      run: dotnet format --verify-no-changes --verbosity diagnostic
+
+  code-quality:
+    name: Code Quality Analysis
+    runs-on: self-hosted
+    needs: fast-build
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build for analysis
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run tests with coverage
+      run: dotnet test --no-build --configuration Release --collect:"XPlat Code Coverage" --results-directory ./coverage
+
+    - name: SonarCloud Scan
+      if: github.actor != 'dependabot[bot]'
+      uses: SonarSource/sonarcloud-github-action@master
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+
+  security-check:
+    name: Security Check
+    runs-on: ubuntu-latest  # Use GitHub runners for security scanning
+    needs: fast-build
+    if: success()
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: ${{ env.DOTNET_VERSION }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Security audit
+      run: dotnet list package --vulnerable --include-transitive
+
+    - name: Dependency Review
+      uses: actions/dependency-review-action@v3
+      with:
+        fail-on-severity: high
+
+  pr-status-check:
+    name: PR Status Check
+    runs-on: ubuntu-latest
+    needs: [fast-build, code-quality, security-check]
+    if: always()
+    
+    steps:
+    - name: Check all jobs status
+      run: |
+        if [[ "${{ needs.fast-build.result }}" == "success" && 
+              "${{ needs.code-quality.result }}" == "success" && 
+              "${{ needs.security-check.result }}" == "success" ]]; then
+          echo "All checks passed! ✅"
+          exit 0
+        else
+          echo "Some checks failed! ❌"
+          echo "Fast Build: ${{ needs.fast-build.result }}"
+          echo "Code Quality: ${{ needs.code-quality.result }}"
+          echo "Security Check: ${{ needs.security-check.result }}"
+          exit 1
+        fi
