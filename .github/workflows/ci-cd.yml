@@ -8,6 +8,14 @@ on:
   release:
     types: [ published ]
 
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+  packages: write
+  actions: read
+  security-events: write
+
 env:
   DOTNET_VERSION: '8.0.x'
   NUGET_OUTPUT_DIRECTORY: ${{ github.workspace }}/nuget
@@ -54,12 +62,13 @@ jobs:
 
   semantic-versioning:
     name: Semantic Versioning
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Use GitHub runners for semantic release to avoid permission issues
     needs: build-and-test
-    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
     outputs:
       version: ${{ steps.semantic.outputs.new_version }}
       changelog: ${{ steps.semantic.outputs.changelog }}
+      released: ${{ steps.semantic.outputs.new_release_published }}
       
     steps:
     - name: Checkout code
@@ -67,23 +76,34 @@ jobs:
       with:
         fetch-depth: 0
         token: ${{ secrets.GITHUB_TOKEN }}
+        persist-credentials: true
+
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+
+    - name: Install semantic-release
+      run: |
+        npm install -g semantic-release@21
+        npm install -g @semantic-release/changelog@6.0.3
+        npm install -g @semantic-release/git@10.0.1
 
     - name: Semantic Release
       id: semantic
-      uses: cycjimmy/semantic-release-action@v4
-      with:
-        semantic_version: 19
-        extra_plugins: |
-          @semantic-release/changelog@6.0.0
-          @semantic-release/git@10.0.0
+      run: npx semantic-release
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        GIT_AUTHOR_NAME: semantic-release-bot
+        GIT_AUTHOR_EMAIL: semantic-release-bot@martynus.net
+        GIT_COMMITTER_NAME: semantic-release-bot
+        GIT_COMMITTER_EMAIL: semantic-release-bot@martynus.net
 
   package-and-publish:
     name: Package and Publish NuGet
     runs-on: self-hosted
     needs: [build-and-test, semantic-versioning]
-    if: github.ref == 'refs/heads/main' || github.event_name == 'release'
+    if: github.ref == 'refs/heads/main' && needs.semantic-versioning.outputs.released == 'true'
     
     steps:
     - name: Checkout code
@@ -135,7 +155,7 @@ jobs:
 
   security-scan:
     name: Security Scan
-    runs-on: self-hosted
+    runs-on: ubuntu-latest  # Use GitHub runners for security scanning to avoid local environment issues
     needs: build-and-test
     
     steps:
@@ -153,11 +173,11 @@ jobs:
     - name: Security audit
       run: dotnet list package --vulnerable --include-transitive
 
-    - name: Run CodeQL Analysis
+    - name: Initialize CodeQL
       uses: github/codeql-action/init@v2
       with:
         languages: csharp
-
+        
     - name: Autobuild
       uses: github/codeql-action/autobuild@v2
 
