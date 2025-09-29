@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.1...v1.0.2) (2025-09-29)
+
+
+### Bug Fixes
+
+* resolve workflow conditions causing package publishing to be skipped ([826f452](https://github.com/606/rbe-shared-datatypes-datetime/commit/826f452ec9dc2d31a8f3a4710b905f0157b4451c))
+
 ## [1.0.1](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.0...v1.0.1) (2025-09-29)
 
 
