@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/606/rbe-shared-datatypes-datetime/compare/v1.0.0...v1.0.1) (2025-09-29)
+
+
+### Bug Fixes
+
+* update CodeQL Action to v3 and add global.json for SDK version management ([6042c6b](https://github.com/606/rbe-shared-datatypes-datetime/commit/6042c6bf1b6d0c59a960b0fa9b2beac71c422e8f))
+
 # 1.0.0 (2025-09-29)
 
 
